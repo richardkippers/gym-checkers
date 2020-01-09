@@ -9,6 +9,7 @@ import copy
 import numpy as np
 import gym
 from gym import error, spaces
+from tf_agents.specs import array_spec
 
 class Checkers(gym.Env):
     '''
@@ -48,6 +49,7 @@ class Checkers(gym.Env):
     }
 
     def __init__(self, board=None, turn='black', last_moved_piece=None, empty_corner=True):
+        super(Checkers, self).__init__()
         '''
         Args:
             empty_corner : bool
@@ -78,6 +80,12 @@ class Checkers(gym.Env):
 
         # For tensorflow
         self.action_space = spaces.Discrete(len(self.legal_moves()))
+        self.observation_space = spaces.Box(low=0, high=2, shape=(8,8,1), dtype=np.uint8)
+
+        self._action_spec = array_spec.BoundedArraySpec(
+            shape=(), dtype=np.int32, minimum=0, maximum=1, name='action')
+        self._observation_spec = array_spec.BoundedArraySpec(
+            shape=(8,8), dtype=np.int32, minimum=0, name='observation')
 
     @staticmethod
     def initial_board():
@@ -135,6 +143,17 @@ class Checkers(gym.Env):
     @property
     def last_moved_piece(self):
         return self._last_moved_piece
+
+
+    def action_spec(self):
+        return self._action_spec
+
+    def observation_spec(self):
+        return self._observation_spec
+
+    def step(self, action):
+        # action: tuple (from, to)
+        self.move(action[0], action[1])
 
     def move(self, from_sq, to_sq, skip_check=False):
         '''Update the game state after the current player moves its piece from `from_sq` to `to_sq`. Reference: https://en.wikipedia.org/wiki/English_draughts#Rules
@@ -327,6 +346,13 @@ class Checkers(gym.Env):
                     print(symbols[col], end='')
             print()
 
+    
+    def render():
+        print("Render")
+
+    def reset():
+        self._board = self.initial_board()
+    
     def print_empty_board(self):
         '''Display the standard representation of the board with squares:
         __00__01__02__03
