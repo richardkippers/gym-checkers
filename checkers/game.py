@@ -76,6 +76,9 @@ class Checkers(gym.Env):
                 else:
                     self.neighbors[sq].append(self.pos2sq(next_row, next_col))
 
+        # For tensorflow
+        self.action_space = spaces.Discrete(len(self.legal_moves()))
+
     @staticmethod
     def initial_board():
         '''Returns the initial configuration of the board'''
@@ -105,7 +108,7 @@ class Checkers(gym.Env):
             },
         }
         return board
-
+    
     @staticmethod
     def immutable_board(board):
         # TODO Bitboard representation?
