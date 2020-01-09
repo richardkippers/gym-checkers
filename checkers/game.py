@@ -7,9 +7,10 @@ from six.moves import range
 import itertools
 import copy
 import numpy as np
+import gym
 
 
-class Checkers:
+class Checkers(gym.Env):
     '''
     The board is represented by the positions of all pieces of different types belonging to the two players.
     The game state as the `board`, `turn`, `last_moved_piece`.
