@@ -352,6 +352,7 @@ class Checkers(gym.Env):
 
     def reset(self):
         self._board = self.initial_board()
+        return self.board
     
     def print_empty_board(self):
         '''Display the standard representation of the board with squares:
