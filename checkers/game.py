@@ -3,7 +3,6 @@
 from __future__ import absolute_import, division, print_function
 from six.moves import range
 
-
 import itertools
 import copy
 import numpy as np
@@ -11,12 +10,13 @@ import gym
 from gym import error, spaces
 from tf_agents.specs import array_spec
 
+
 class Checkers(gym.Env):
-    '''
+    """
     The board is represented by the positions of all pieces of different types belonging to the two players.
     The game state as the `board`, `turn`, `last_moved_piece`.
     A move is represented by the origin and destination squares by the current player.
-    '''
+    """
     size = 8
     n_positions = int(size ** 2 // 2)
     n_per_row = int(size // 2)
@@ -80,51 +80,59 @@ class Checkers(gym.Env):
 
         # For tensorflow
         self.action_space = spaces.Discrete(len(self.legal_moves()))
-        self.observation_space = spaces.Box(low=0, high=2, shape=(8,8,1), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=2, shape=(8, 8, 1), dtype=np.uint8)
 
         self._action_spec = array_spec.BoundedArraySpec(
             shape=(), dtype=np.int32, minimum=0, maximum=1, name='action')
         self._observation_spec = array_spec.BoundedArraySpec(
-            shape=(8,8), dtype=np.int32, minimum=0, name='observation')
+            shape=(8, 8), dtype=np.int32, minimum=0, name='observation')
 
     @staticmethod
     def initial_board():
-        '''Returns the initial configuration of the board'''
+        """Returns the initial configuration of the board"""
         # Black starts at the top of the board
-        board = {
-            'black': {
-                'men': set(range(12)),
-                'kings': set(),
-            },
-            'white': {
-                'men': set(range(32-12, 32)),
-                'kings': set(),
-            },
-        }
+        # board = {
+        #     'black': {
+        #         'men': set(range(12)),
+        #         'kings': set(),
+        #     },
+        #     'white': {
+        #         'men': set(range(32 - 12, 32)),
+        #         'kings': set(),
+        #     },
+        # }
+        board = [[12,0],[12,0]]
         return board
 
     @staticmethod
     def empty_board():
-        board = {
-            'black': {
-                'men': set(),
-                'kings': set(),
-            },
-            'white': {
-                'men': set(),
-                'kings': set(),
-            },
-        }
+        # board = {
+        #     'black': {
+        #         'men': set(),
+        #         'kings': set(),
+        #     },
+        #     'white': {
+        #         'men': set(),
+        #         'kings': set(),
+        #     },
+        # }
+        board = [[12, 0], [12, 0]]
         return board
-    
+
     @staticmethod
     def immutable_board(board):
         # TODO Bitboard representation?
+        # pieces = (
+        #     frozenset(board['black']['men']),
+        #     frozenset(board['black']['kings']),
+        #     frozenset(board['white']['men']),
+        #     frozenset(board['white']['kings']),
+        # )
         pieces = (
-            frozenset(board['black']['men']),
-            frozenset(board['black']['kings']),
-            frozenset(board['white']['men']),
-            frozenset(board['white']['kings']),
+            frozenset(board[0][0]),
+            frozenset(board[0][1]),
+            frozenset(board[1][0]),
+            frozenset(board[1][1]),
         )
         return pieces
 
@@ -144,7 +152,6 @@ class Checkers(gym.Env):
     def last_moved_piece(self):
         return self._last_moved_piece
 
-
     def action_spec(self):
         return self._action_spec
 
@@ -156,11 +163,11 @@ class Checkers(gym.Env):
         self.move(action[0], action[1])
 
     def move(self, from_sq, to_sq, skip_check=False):
-        '''Update the game state after the current player moves its piece from `from_sq` to `to_sq`. Reference: https://en.wikipedia.org/wiki/English_draughts#Rules
+        """Update the game state after the current player moves its piece from `from_sq` to `to_sq`. Reference: https://en.wikipedia.org/wiki/English_draughts#Rules
         Args:
             skip_check : bool
                 If the move is chosen from results returned by `legal_moves()`, the legality check can be skipped for efficiency. Default to be False.
-        '''
+        """
         if not skip_check:
             # Reject illegal moves
             assert (from_sq, to_sq) in self.legal_moves(), 'The move is not legal.'
@@ -168,7 +175,9 @@ class Checkers(gym.Env):
         # The move is legal
         switch_turn = True
         # Move the piece
-        for type in ['men', 'kings']:
+        # for type in ['men', 'kings']:
+        #     pieces = self._board[self._turn][type]
+        for type in range(0,2):
             pieces = self._board[self._turn][type]
             if from_sq in pieces:
                 pieces.remove(from_sq)
@@ -237,10 +246,10 @@ class Checkers(gym.Env):
         return simple_moves
 
     def check_occupancy(self, sq, by_players=all_players):
-        '''
+        """
         Return : bool
             True if `sq` is occupied.
-        '''
+        """
         for player in by_players:
             for type in ['men', 'kings']:
                 if sq in self._board[player][type]:
@@ -248,7 +257,7 @@ class Checkers(gym.Env):
         return False
 
     def available_jumps(self, player, type, sq):
-        '''Returns the available jumps of `player`'s piece of `type` at `sq`.'''
+        """Returns the available jumps of `player`'s piece of `type` at `sq`."""
         jumps = []
         adversary = 'black' if player == 'white' else 'white'
         for di in Checkers.legal_dirs[player][type]:
@@ -273,11 +282,12 @@ class Checkers(gym.Env):
                     jumps += itertools.product([sq], self.available_jumps(self._turn, type, sq))
         else:
             piece_type = 'men' if self._last_moved_piece in self._board[self._turn]['men'] else 'kings'
-            jumps = itertools.product([self._last_moved_piece], self.available_jumps(self._turn, piece_type, self._last_moved_piece))
+            jumps = itertools.product([self._last_moved_piece],
+                                      self.available_jumps(self._turn, piece_type, self._last_moved_piece))
         return list(jumps)
 
     def legal_moves(self):
-        '''Returns all legal moves of the current `player`.'''
+        """Returns all legal moves of the current `player`."""
         all_moves = self.all_jumps()
         # Jumps are mandatory
         if 0 < len(all_moves):
@@ -346,16 +356,15 @@ class Checkers(gym.Env):
                     print(symbols[col], end='')
             print()
 
-    
     def render(self):
         print("Render")
 
     def reset(self):
         self._board = self.initial_board()
         return self.board
-    
+
     def print_empty_board(self):
-        '''Display the standard representation of the board with squares:
+        """Display the standard representation of the board with squares:
         __00__01__02__03
         04__05__06__07__
         __08__09__10__11
@@ -364,7 +373,7 @@ class Checkers(gym.Env):
         20__21__22__23__
         __24__25__26__27
         28__29__30__31__
-        '''
+        """
         board = -1 * np.ones((self.size, self.size), dtype='int')
         # Print board
         for sq in range(self.n_positions):
