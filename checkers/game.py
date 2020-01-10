@@ -347,10 +347,10 @@ class Checkers(gym.Env):
             print()
 
     
-    def render():
+    def render(self):
         print("Render")
 
-    def reset():
+    def reset(self):
         self._board = self.initial_board()
     
     def print_empty_board(self):
