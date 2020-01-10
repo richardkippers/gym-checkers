@@ -360,9 +360,9 @@ class Checkers(gym.Env):
         print("Render")
 
     def reset(self):
-        self.board = None
+        self._board = None
         self._board = self.initial_board()
-        return self.board
+        return self._board
 
     def print_empty_board(self):
         """Display the standard representation of the board with squares:
