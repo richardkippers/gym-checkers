@@ -22,8 +22,8 @@ class Checkers(gym.Env):
     n_per_row = int(size // 2)
 
     # TODO change players to top/bottom players
-    all_players = ['black', 'white']
-    all_piece_types = ['men', 'kings']
+    all_players = [0, 1]
+    all_piece_types = [0, 1]
 
     # Converting to a flat representation of the board
     empty_square = 0
@@ -38,17 +38,17 @@ class Checkers(gym.Env):
 
     # The directions a piece is allowed to move in
     legal_dirs = {
-        'black': {
-            'men': [0, 1],
-            'kings': [0, 1, 2, 3],
+        0: {
+            0: [0, 1],
+            1: [0, 1, 2, 3],
         },
-        'white': {
-            'men': [2, 3],
-            'kings': [0, 1, 2, 3],
+        1: {
+            0: [2, 3],
+            1: [0, 1, 2, 3],
         },
     }
 
-    def __init__(self, board=None, turn='black', last_moved_piece=None, empty_corner=True):
+    def __init__(self, board=None, turn=0, last_moved_piece=None, empty_corner=True):
         super(Checkers, self).__init__()
         '''
         Args:
@@ -92,13 +92,13 @@ class Checkers(gym.Env):
         """Returns the initial configuration of the board"""
         # Black starts at the top of the board
         # board = {
-        #     'black': {
-        #         'men': set(range(12)),
-        #         'kings': set(),
+        #     0: {
+        #         0: set(range(12)),
+        #         1: set(),
         #     },
-        #     'white': {
-        #         'men': set(range(32 - 12, 32)),
-        #         'kings': set(),
+        #     1: {
+        #         0: set(range(32 - 12, 32)),
+        #         1: set(),
         #     },
         # }
         board = [[12,0],[12,0]]
@@ -107,13 +107,13 @@ class Checkers(gym.Env):
     @staticmethod
     def empty_board():
         # board = {
-        #     'black': {
-        #         'men': set(),
-        #         'kings': set(),
+        #     0: {
+        #         0: set(),
+        #         1: set(),
         #     },
-        #     'white': {
-        #         'men': set(),
-        #         'kings': set(),
+        #     1: {
+        #         0: set(),
+        #         1: set(),
         #     },
         # }
         board = [[12, 0], [12, 0]]
@@ -123,10 +123,10 @@ class Checkers(gym.Env):
     def immutable_board(board):
         # TODO Bitboard representation?
         # pieces = (
-        #     frozenset(board['black']['men']),
-        #     frozenset(board['black']['kings']),
-        #     frozenset(board['white']['men']),
-        #     frozenset(board['white']['kings']),
+        #     frozenset(board[0][0]),
+        #     frozenset(board[0][1]),
+        #     frozenset(board[1][0]),
+        #     frozenset(board[1][1]),
         # )
         pieces = (
             frozenset(board[0][0]),
@@ -175,7 +175,7 @@ class Checkers(gym.Env):
         # The move is legal
         switch_turn = True
         # Move the piece
-        # for type in ['men', 'kings']:
+        # for type in [0, 1]:
         #     pieces = self._board[self._turn][type]
         for type in range(0,2):
             pieces = self._board[self._turn][type]
@@ -195,7 +195,7 @@ class Checkers(gym.Env):
             from_row, from_col = self.sq2pos(from_sq)
             capture_row, capture_col = (from_row + to_row) / 2, (from_col + to_col) / 2
             capture_sq = self.pos2sq(capture_row, capture_col)
-            for type in ['men', 'kings']:
+            for type in [0, 1]:
                 pieces = self._board[self.adversary][type]
                 if capture_sq in pieces:
                     pieces.remove(capture_sq)
@@ -208,15 +208,15 @@ class Checkers(gym.Env):
             switch_turn = len(jumps) == 0
 
         # Crowning a king (must end the turn)
-        if piece_type == 'men':
+        if piece_type == 0:
             # Kings row is at the bottom for black
-            if self._turn == 'black' and self.n_positions - to_sq <= self.n_per_row:
-                self._board[self._turn]['men'].remove(to_sq)
-                self._board[self._turn]['kings'].add(to_sq)
+            if self._turn == 0 and self.n_positions - to_sq <= self.n_per_row:
+                self._board[self._turn][0].remove(to_sq)
+                self._board[self._turn][1].add(to_sq)
             # Kings row is at the top for white
-            if self._turn == 'white' and to_sq < self.n_per_row:
-                self._board[self._turn]['men'].remove(to_sq)
-                self._board[self._turn]['kings'].add(to_sq)
+            if self._turn == 1 and to_sq < self.n_per_row:
+                self._board[self._turn][0].remove(to_sq)
+                self._board[self._turn][1].add(to_sq)
 
         if switch_turn:
             self._turn = self.adversary
@@ -232,7 +232,7 @@ class Checkers(gym.Env):
 
     @property
     def adversary(self):
-        return 'black' if self._turn == 'white' else 'white'
+        return 0 if self._turn == 1 else 1
 
     def available_simple_moves(self, player, type, sq):
         simple_moves = []
@@ -251,7 +251,7 @@ class Checkers(gym.Env):
             True if `sq` is occupied.
         """
         for player in by_players:
-            for type in ['men', 'kings']:
+            for type in [0, 1]:
                 if sq in self._board[player][type]:
                     return True
         return False
@@ -259,7 +259,7 @@ class Checkers(gym.Env):
     def available_jumps(self, player, type, sq):
         """Returns the available jumps of `player`'s piece of `type` at `sq`."""
         jumps = []
-        adversary = 'black' if player == 'white' else 'white'
+        adversary = 0 if player == 1 else 1
         for di in Checkers.legal_dirs[player][type]:
             capture_sq = self.neighbors[sq][di]
             # There is a neighboring square
@@ -277,11 +277,11 @@ class Checkers(gym.Env):
     def all_jumps(self):
         if self._last_moved_piece is None:
             jumps = []
-            for type in ['men', 'kings']:
+            for type in [0, 1]:
                 for sq in self._board[self._turn][type]:
                     jumps += itertools.product([sq], self.available_jumps(self._turn, type, sq))
         else:
-            piece_type = 'men' if self._last_moved_piece in self._board[self._turn]['men'] else 'kings'
+            piece_type = 0 if self._last_moved_piece in self._board[self._turn][0] else 1
             jumps = itertools.product([self._last_moved_piece],
                                       self.available_jumps(self._turn, piece_type, self._last_moved_piece))
         return list(jumps)
@@ -293,7 +293,7 @@ class Checkers(gym.Env):
         if 0 < len(all_moves):
             return all_moves
         # No jumps available
-        for type in ['men', 'kings']:
+        for type in [0, 1]:
             for sq in self._board[self._turn][type]:
                 all_moves += itertools.product([sq], self.available_simple_moves(self._turn, type, sq))
         return all_moves
@@ -323,16 +323,16 @@ class Checkers(gym.Env):
         # Empty board
         board = np.ones((self.size, self.size), dtype='int') * Checkers.empty_square
         # Place the pieces
-        for sq in self._board['black']['men']:
+        for sq in self._board[0][0]:
             row, col = self.sq2pos(sq)
             board[row][col] = Checkers.black_man
-        for sq in self._board['black']['kings']:
+        for sq in self._board[0][1]:
             row, col = self.sq2pos(sq)
             board[row][col] = Checkers.black_king
-        for sq in self._board['white']['men']:
+        for sq in self._board[1][0]:
             row, col = self.sq2pos(sq)
             board[row][col] = Checkers.white_man
-        for sq in self._board['white']['kings']:
+        for sq in self._board[1][1]:
             row, col = self.sq2pos(sq)
             board[row][col] = Checkers.white_king
         return board
@@ -400,11 +400,11 @@ if __name__ == '__main__':
     assert ch.sq2pos(31) == (7, 6)
     assert ch.pos2sq(7, 6) == 31
     print(ch.flat_board())
-    ch._board['white']['kings'].add(13)
+    ch._board[1][1].add(13)
     ch.print_board()
     print(ch.neighbors)
-    print(ch.available_simple_moves('black', 'men', 8))
-    print(ch.available_jumps('black', 'men', 8))
+    print(ch.available_simple_moves(0, 0, 8))
+    print(ch.available_jumps(0, 0, 8))
     print(ch.legal_moves())
     print(ch.move(8, 17))
     ch.print_board()
