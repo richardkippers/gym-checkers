@@ -101,7 +101,7 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = [[np.array(range(12)),np.array([])],[np.array(range(12)),np.array([])]]
+        board = np.array([[np.array(range(12)),np.array([])],[np.array(range(12)),np.array([])]])
         return board
 
     @staticmethod
@@ -116,7 +116,7 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = [[np.array(range(12)),np.array([])],[np.array(range(12)),np.array([])]]
+        board = np.array([[np.array(range(12)),np.array([])],[np.array(range(12)),np.array([])]])
         return board
 
     @staticmethod
