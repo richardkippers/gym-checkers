@@ -360,6 +360,7 @@ class Checkers(gym.Env):
         print("Render")
 
     def reset(self):
+        self.board = None
         self._board = self.initial_board()
         return self.board
 
