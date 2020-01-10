@@ -101,7 +101,7 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = [[12,0],[12,0]]
+        board = [[set(range(12)),set()],[set(range(12)),set()]]
         return board
 
     @staticmethod
@@ -116,7 +116,7 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = [[12, 0], [12, 0]]
+        board = [[set(range(12)),set()],[set(range(12)),set()]]
         return board
 
     @staticmethod
