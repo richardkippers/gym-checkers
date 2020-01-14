@@ -101,7 +101,7 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = np.array([[np.array(range(12)),np.array([])],[np.array(range(12)),np.array([])]])
+        board = np.array([[np.array(range(12)),np.array([])],[np.array(range(32 - 12, 32)),np.array([])]])
         return board
 
     @staticmethod
@@ -357,7 +357,7 @@ class Checkers(gym.Env):
             print()
 
     def render(self):
-        print("Render")
+        return self._board
 
     def reset(self):
         self._board = None
@@ -396,28 +396,31 @@ class Checkers(gym.Env):
 
 if __name__ == '__main__':
     ch = Checkers(empty_corner=True)
-    ch.print_empty_board()
-    state = ch.save_state()
-    assert ch.sq2pos(31) == (7, 6)
-    assert ch.pos2sq(7, 6) == 31
-    print(ch.flat_board())
-    ch._board[1][1].add(13)
-    ch.print_board()
-    print(ch.neighbors)
-    print(ch.available_simple_moves(0, 0, 8))
-    print(ch.available_jumps(0, 0, 8))
-    print(ch.legal_moves())
-    print(ch.move(8, 17))
-    ch.print_board()
-    ch.restore_state(state)
-
-    # Play a quick game
-    ply = 0
-    winner = None
-    while winner is None:
-        # Select a legal move for the current player
-        move = ch.legal_moves()[0]
-        board, turn, last_moved_piece, moves, winner = ch.move(*move, skip_check=True)
-        ch.print_board()
-        print(ply, turn, last_moved_piece, winner)
-        ply += 1
+    ch.initial_board()
+    ch.render()
+    b = ch.reset()
+    # ch.print_empty_board()
+    # state = ch.save_state()
+    # assert ch.sq2pos(31) == (7, 6)
+    # assert ch.pos2sq(7, 6) == 31
+    # print(ch.flat_board())
+    # ch._board[1][1].add(13)
+    # ch.print_board()
+    # print(ch.neighbors)
+    # print(ch.available_simple_moves(0, 0, 8))
+    # print(ch.available_jumps(0, 0, 8))
+    # print(ch.legal_moves())
+    # print(ch.move(8, 17))
+    # ch.print_board()
+    # ch.restore_state(state)
+    #
+    # # Play a quick game
+    # ply = 0
+    # winner = None
+    # while winner is None:
+    #     # Select a legal move for the current player
+    #     move = ch.legal_moves()[0]
+    #     board, turn, last_moved_piece, moves, winner = ch.move(*move, skip_check=True)
+    #     ch.print_board()
+    #     print(ply, turn, last_moved_piece, winner)
+    #     ply += 1
