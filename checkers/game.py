@@ -79,7 +79,7 @@ class Checkers(gym.Env):
                     self.neighbors[sq].append(self.pos2sq(next_row, next_col))
 
         # For tensorflow
-        self.action_space = spaces.Discrete(self.legal_moves())
+        self.action_space = spaces.Discrete(len(self.legal_moves()))
         self.observation_space = spaces.Box(low=0, high=2, shape=(8, 8, 1), dtype=np.uint8)
 
         self._action_spec = array_spec.BoundedArraySpec(
