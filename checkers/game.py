@@ -101,7 +101,8 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = np.array([[np.array(range(12)),np.array([])],[np.array(range(32 - 12, 32)),np.array([])]])
+        #board = np.array([[np.array(range(12)),np.array([])],[np.array(range(32 - 12, 32)),np.array([])]])
+        board = [[list(range(12)), []], [list(range(32 - 12, 32)), []]]
         return board
 
     @staticmethod
@@ -116,7 +117,7 @@ class Checkers(gym.Env):
         #         1: set(),
         #     },
         # }
-        board = np.array([[np.array(range(12)),np.array([])],[np.array(range(12)),np.array([])]])
+        board = [[list(range(12)), []], [list(range(32 - 12, 32)), []]]
         return board
 
     @staticmethod
@@ -180,8 +181,8 @@ class Checkers(gym.Env):
         for type in range(0,2):
             pieces = self._board[self._turn][type]
             if from_sq in pieces:
-                pieces.delete(from_sq)
-                pieces.append(to_sq)
+                pieces.remove(from_sq)
+                pieces.add(to_sq)
                 piece_type = type
                 self._last_moved_piece = to_sq
                 break
@@ -198,7 +199,7 @@ class Checkers(gym.Env):
             for type in range(0,2):
                 pieces = self._board[self.adversary][type]
                 if capture_sq in pieces:
-                    pieces.delete(capture_sq)
+                    pieces.remove(capture_sq)
                     break
             else:
                 assert False, 'An opposing piece must be captured.'
@@ -211,12 +212,12 @@ class Checkers(gym.Env):
         if piece_type == 0:
             # Kings row is at the bottom for black
             if self._turn == 0 and self.n_positions - to_sq <= self.n_per_row:
-                self._board[self._turn][0].delete(to_sq)
-                self._board[self._turn][1].append(to_sq)
+                self._board[self._turn][0].remove(to_sq)
+                self._board[self._turn][1].add(to_sq)
             # Kings row is at the top for white
             if self._turn == 1 and to_sq < self.n_per_row:
-                self._board[self._turn][0].delete(to_sq)
-                self._board[self._turn][1].append(to_sq)
+                self._board[self._turn][0].remove(to_sq)
+                self._board[self._turn][1].add(to_sq)
 
         if switch_turn:
             self._turn = self.adversary
