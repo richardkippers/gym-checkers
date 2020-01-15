@@ -357,7 +357,7 @@ class Checkers(gym.Env):
             print()
 
     def render(self):
-        return self._board.deepcopy()
+        return np.copy(self._board)
 
     def reset(self):
         self._board = None
