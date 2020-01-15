@@ -182,7 +182,7 @@ class Checkers(gym.Env):
             pieces = self._board[self._turn][type]
             if from_sq in pieces:
                 pieces.remove(from_sq)
-                pieces.add(to_sq)
+                pieces.append(to_sq)
                 piece_type = type
                 self._last_moved_piece = to_sq
                 break
@@ -213,11 +213,11 @@ class Checkers(gym.Env):
             # Kings row is at the bottom for black
             if self._turn == 0 and self.n_positions - to_sq <= self.n_per_row:
                 self._board[self._turn][0].remove(to_sq)
-                self._board[self._turn][1].add(to_sq)
+                self._board[self._turn][1].append(to_sq)
             # Kings row is at the top for white
             if self._turn == 1 and to_sq < self.n_per_row:
                 self._board[self._turn][0].remove(to_sq)
-                self._board[self._turn][1].add(to_sq)
+                self._board[self._turn][1].append(to_sq)
 
         if switch_turn:
             self._turn = self.adversary
