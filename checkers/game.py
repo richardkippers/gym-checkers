@@ -9,6 +9,8 @@ import numpy as np
 import gym
 from gym import error, spaces
 from tf_agents.specs import array_spec
+import warnings
+warnings.filterwarnings("ignore")
 
 # Player 0 is black (on top) player 1 = white (bellow)
 
@@ -397,7 +399,7 @@ class Checkers(gym.Env):
             print()
 
     def render(self):
-        return np.copy(np.array(self._board))
+        return np.array([[np.array(self._board[0][0]), np.array(self._board[0][1])], [np.array(self._board[1][0]), np.array(self._board[1][1])]])
 
     def reset(self):
         self._board = None
