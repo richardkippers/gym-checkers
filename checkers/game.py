@@ -10,6 +10,7 @@ import gym
 from gym import error, spaces
 from tf_agents.specs import array_spec
 
+# Player 0 is black (on top) player 1 = white (bellow)
 
 class Checkers(gym.Env):
     """
@@ -55,6 +56,7 @@ class Checkers(gym.Env):
             empty_corner : bool
                 If the upper left corner of the board should be used. Default to be False.
         '''
+        # I think turn = player
         # assert size == 8, 'Only supports size 8.'
         assert turn in Checkers.all_players, 'It must be either `black` or `white`\'s turn'
         self.empty_corner = empty_corner
@@ -159,9 +161,24 @@ class Checkers(gym.Env):
     def observation_spec(self):
         return self._observation_spec
 
+    def get_score(self):
+        # Calculate score, 
+        # + 1 or 2 for own men, king
+        # - 1 or 2 for opponent men, king
+        scores = [1,2,-1,-2] if self._turn == 0 else [-1,-2,1,2]
+        score = 0
+        for i in len(4):
+            score += len(self.board[i]) * scores[i]
+        return score
+
+
+
     def step(self, action):
         # action: tuple (from, to)
-        self.move(action[0], action[1])
+
+        # Return: reward, done
+
+        return self.move(action[0], action[1])
 
     def move(self, from_sq, to_sq, skip_check=False):
         """Update the game state after the current player moves its piece from `from_sq` to `to_sq`. Reference: https://en.wikipedia.org/wiki/English_draughts#Rules
@@ -172,6 +189,8 @@ class Checkers(gym.Env):
         if not skip_check:
             # Reject illegal moves
             assert (from_sq, to_sq) in self.legal_moves(), 'The move is not legal.'
+
+        score_before = self.get_score()
 
         # The move is legal
         switch_turn = True
@@ -229,7 +248,12 @@ class Checkers(gym.Env):
             winner = self.adversary
         else:
             winner = None
-        return self.board, self.turn, self.last_moved_piece, all_next_moves, winner
+
+        # Return: reward, done
+        score_after = self.get_score()
+        return score_after - score_before, False if winner is None else winner
+
+        #return self.board, self.turn, self.last_moved_piece, all_next_moves, winner
 
     @property
     def adversary(self):
