@@ -167,9 +167,12 @@ class Checkers(gym.Env):
         # - 1 or 2 for opponent men, king
         scores = [1,2,-1,-2] if self._turn == 0 else [-1,-2,1,2]
         p_pos = [0,0,1,1]
+        i_pos = [0,1,0,1]
+
         score = 0
+
         for i in range(4):
-            score += len(self.board[p_pos[i]][i]) * scores[p_pos[i]][i]
+            score += len(env.board[p_pos[i]][i_pos[i]]) * scores[i]
         return score
 
 
