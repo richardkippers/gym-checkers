@@ -172,7 +172,7 @@ class Checkers(gym.Env):
         score = 0
 
         for i in range(4):
-            score += len(env.board[p_pos[i]][i_pos[i]]) * scores[i]
+            score += len(self.board[p_pos[i]][i_pos[i]]) * scores[i]
         return score
 
 
