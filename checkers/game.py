@@ -387,7 +387,7 @@ class Checkers(gym.Env):
             print()
 
     def render(self):
-        return np.copy(self._board)
+        return np.array([np.array([np.array(x) for x in xi]) for xi in np.copy(self._board)])
 
     def reset(self):
         self._board = None
