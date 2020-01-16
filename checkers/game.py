@@ -251,12 +251,12 @@ class Checkers(gym.Env):
         if self._turn == 0:
             # count opponent pieces for black (so white)
             # last 2
-            if np.sum(env.board[1:]) == 0:
+            if np.sum(self.board[1:]) == 0:
                 won = True
         else:
             # count opponent pieces for white (so black)
             # first 2
-            if np.sum(env.board[0:1]) == 0:
+            if np.sum(self.board[0:1]) == 0:
                 won = True 
 
         if switch_turn:
