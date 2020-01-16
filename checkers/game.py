@@ -255,7 +255,8 @@ class Checkers(gym.Env):
 
         # Return: reward, done
         score_after = self.get_score()
-        return score_after - score_before, False if winner is None else winner
+        
+        return score_after - score_before, False if winner == None else True
 
         #return self.board, self.turn, self.last_moved_piece, all_next_moves, winner
 
