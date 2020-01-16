@@ -9,6 +9,8 @@ import numpy as np
 import gym
 from gym import error, spaces
 from tf_agents.specs import array_spec
+import warnings
+warnings.filterwarnings("ignore")
 
 # Player 0 is black (on top) player 1 = white (bellow)
 
