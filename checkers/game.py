@@ -162,9 +162,11 @@ class Checkers(gym.Env):
         return self._observation_spec
 
     def get_score(self):
+        
         # Calculate score, 
         # + 1 or 2 for own men, king
         # - 1 or 2 for opponent men, king
+
         scores = [1,2,-1,-2] if self._turn == 0 else [-1,-2,1,2]
         p_pos = [0,0,1,1]
         i_pos = [0,1,0,1]
@@ -242,23 +244,31 @@ class Checkers(gym.Env):
                 self._board[self._turn][0].remove(to_sq)
                 self._board[self._turn][1].append(to_sq)
 
+        # Check if player has won
+        won = False
+        if self._turn == 0:
+            # count opponent pieces for black (so white)
+            # last 2
+            if np.sum(env.board[1:]) == 0:
+                won = True
+        else:
+            # count opponent pieces for white (so black)
+            # first 2
+            if np.sum(env.board[0:1]) == 0:
+                won = True 
+
         if switch_turn:
             self._turn = self.adversary
             self._last_moved_piece = None
-
-        # Check win/loss, winner is None before the game ends
-        all_next_moves = self.legal_moves()
-        if len(all_next_moves) == 0:
-            winner = self.adversary
-        else:
-            winner = None
-
-        # Return: reward, done
-        score_after = self.get_score()
         
-        return score_after - score_before, False if winner == None else True
+        # Return: reward, done, won
+        score_after = self.get_score()
 
-        #return self.board, self.turn, self.last_moved_piece, all_next_moves, winner
+        done = if len(self.legal_moves()) == 0 then True else False
+        
+        # return reward, done(bool), won (bool)
+        return score_after - score_before, done, won
+
 
     @property
     def adversary(self):
@@ -387,7 +397,7 @@ class Checkers(gym.Env):
             print()
 
     def render(self):
-        return np.copy(self._board)
+        return np.copy(np.array(self._board))
 
     def reset(self):
         self._board = None
