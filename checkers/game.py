@@ -266,7 +266,7 @@ class Checkers(gym.Env):
         # Return: reward, done, won
         score_after = self.get_score()
 
-        done = if len(self.legal_moves()) == 0 then True else False
+        done = True if len(self.legal_moves()) == 0 else False
         
         # return reward, done(bool), won (bool)
         return score_after - score_before, done, won
