@@ -404,6 +404,7 @@ class Checkers(gym.Env):
     def reset(self):
         self._board = None
         self._board = self.initial_board()
+        self._turn = 0
         return self._board
 
     def print_empty_board(self):
