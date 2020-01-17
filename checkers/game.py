@@ -250,6 +250,8 @@ class Checkers(gym.Env):
         done = True if len(self.legal_moves()) == 0 else False
         if done:
             winner = self._turn
+        else:
+            winner = None
         
         # Check if player has won
         won = False
