@@ -184,7 +184,7 @@ class Checkers(gym.Env):
     def step(self, action):
         # action: tuple (from, to)
 
-        # Return: reward, done
+        # Return: reward, done, winner
 
         return self.move(action[0], action[1])
 
@@ -246,6 +246,7 @@ class Checkers(gym.Env):
                 self._board[self._turn][0].remove(to_sq)
                 self._board[self._turn][1].append(to_sq)
 
+        
         # Check if player has won
         won = False
         if self._turn == 0:
@@ -265,11 +266,16 @@ class Checkers(gym.Env):
         
         # Return: reward, done, won
         score_after = self.get_score()
-
+        
+        #Check which player has won
         done = True if len(self.legal_moves()) == 0 else False
+        if done:
+            winner = self._turn
+        else:
+            winner = None
         
         # return reward, done(bool), won (bool)
-        return score_after - score_before, done, won
+        return score_after - score_before, done, winner
 
 
     @property
@@ -404,6 +410,7 @@ class Checkers(gym.Env):
     def reset(self):
         self._board = None
         self._board = self.initial_board()
+        self._turn = 0
         return self._board
 
     def print_empty_board(self):
