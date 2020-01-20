@@ -163,13 +163,13 @@ class Checkers(gym.Env):
     def observation_spec(self):
         return self._observation_spec
 
-    def get_score(self):
+    def get_score(self,men_value=1,king_value=2):
         
         # Calculate score, 
         # + 1 or 2 for own men, king
         # - 1 or 2 for opponent men, king
 
-        scores = [1,2,-1,-2] if self._turn == 0 else [-1,-2,1,2]
+        scores = [men_value,king_value,men_value * -1, king_value * -1] if self._turn == 0 else [men_value * -1, king_value*-1, men_value, king_value]
         p_pos = [0,0,1,1]
         i_pos = [0,1,0,1]
 
