@@ -172,7 +172,7 @@ class Checkers(gym.Env):
         scores = [men_value,king_value,men_value * -1, king_value * -1] if self._turn == 0 else [men_value * -1, king_value*-1, men_value, king_value]
         p_pos = [0,0,1,1]
         i_pos = [0,1,0,1]
-
+    
         score = 0
 
         for i in range(4):
@@ -181,14 +181,14 @@ class Checkers(gym.Env):
 
 
 
-    def step(self, action):
+    def step(self, action,men_value=1,king_value=2):
         # action: tuple (from, to)
 
         # Return: reward, done, winner
 
-        return self.move(action[0], action[1])
+        return self.move(action[0], action[1], False, men_value, king_value)
 
-    def move(self, from_sq, to_sq, skip_check=False):
+    def move(self, from_sq, to_sq, skip_check=False, men_value, king_value):
         """Update the game state after the current player moves its piece from `from_sq` to `to_sq`. Reference: https://en.wikipedia.org/wiki/English_draughts#Rules
         Args:
             skip_check : bool
@@ -198,7 +198,7 @@ class Checkers(gym.Env):
             # Reject illegal moves
             assert (from_sq, to_sq) in self.legal_moves(), 'The move is not legal.'
 
-        score_before = self.get_score()
+        score_before = self.get_score(men_value,king_value)
 
         # The move is legal
         switch_turn = True
@@ -265,7 +265,7 @@ class Checkers(gym.Env):
             self._last_moved_piece = None
         
         # Return: reward, done, won
-        score_after = self.get_score()
+        score_after = self.get_score(men_value,king_value)
         
         #Check which player has won
         done = True if len(self.legal_moves()) == 0 else False
