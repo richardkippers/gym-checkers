@@ -186,17 +186,17 @@ class Checkers(gym.Env):
 
         # Return: reward, done, winner
 
-        return self.move(action[0], action[1], False, men_value, king_value)
+        return self.move(action[0], action[1], men_value, king_value)
 
-    def move(self, from_sq, to_sq, skip_check=False, men_value, king_value):
+    def move(self, from_sq, to_sq, men_value, king_value):
         """Update the game state after the current player moves its piece from `from_sq` to `to_sq`. Reference: https://en.wikipedia.org/wiki/English_draughts#Rules
         Args:
             skip_check : bool
                 If the move is chosen from results returned by `legal_moves()`, the legality check can be skipped for efficiency. Default to be False.
         """
-        if not skip_check:
-            # Reject illegal moves
-            assert (from_sq, to_sq) in self.legal_moves(), 'The move is not legal.'
+        #if not skip_check:
+        #    # Reject illegal moves
+        #    assert (from_sq, to_sq) in self.legal_moves(), 'The move is not legal.'
 
         score_before = self.get_score(men_value,king_value)
 
