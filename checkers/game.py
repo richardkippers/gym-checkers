@@ -163,7 +163,7 @@ class Checkers(gym.Env):
     def observation_spec(self):
         return self._observation_spec
 
-    def get_score(self,men_value=1,king_value=2):
+    def get_score(self,men_value=1,king_value=15):
         
         # Calculate score, 
         # + 1 or 2 for own men, king
