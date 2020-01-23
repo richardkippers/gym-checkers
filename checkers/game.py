@@ -163,7 +163,7 @@ class Checkers(gym.Env):
     def observation_spec(self):
         return self._observation_spec
 
-    def get_score(self,men_value=1,king_value=15):
+    def get_score(self,men_value=1,king_value=2):
         
         # Calculate score, 
         # + 1 or 2 for own men, king
@@ -249,16 +249,19 @@ class Checkers(gym.Env):
         
         # Check if player has won
         won = False
+        winner = None
         if self._turn == 0:
             # count opponent pieces for black (so white)
             # last 2
             if np.sum(self.board[1:]) == 0:
                 won = True
+                winner = self._turn
         else:
             # count opponent pieces for white (so black)
             # first 2
             if np.sum(self.board[0:1]) == 0:
-                won = True 
+                won = True
+                winner = self._turn
 
         if switch_turn:
             self._turn = self.adversary
@@ -269,10 +272,7 @@ class Checkers(gym.Env):
         
         #Check which player has won
         done = True if len(self.legal_moves()) == 0 else False
-        if done:
-            winner = self._turn
-        else:
-            winner = None
+
         
         # return reward, done(bool), won (bool)
         return score_after - score_before, done, winner
